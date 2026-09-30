@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TinyServerLab</title>
-    <meta name="description" content="Self-hosted apps on Raspberry Pi 5. Replace subscriptions. Free and open source.">
-    <meta name="theme-color" content="#0f172a">
+    <title>TinyServerLab Apps</title>
     <style>
         * {
             margin: 0;
@@ -13,26 +11,41 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1a2332 100%);
-            color: #e2e8f0;
-            line-height: 1.6;
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --bg-dark: #0f172a;
+            --bg-light: #1a2332;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #06b6d4;
         }
 
-        .hero {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+            color: var(--text-light);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
             padding: 2rem;
         }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
         .logo {
-            font-size: 5rem;
-            margin-bottom: 2rem;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
             animation: float 3s ease-in-out infinite;
         }
 
@@ -41,314 +54,488 @@
             50% { transform: translateY(-10px); }
         }
 
-        h1 {
-            font-size: 3.5rem;
+        .header h1 {
+            font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .tagline {
-            font-size: 1.3rem;
-            color: #94a3b8;
-            margin-bottom: 3rem;
-            max-width: 500px;
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
         }
 
-        .stats {
-            display: flex;
-            gap: 3rem;
-            justify-content: center;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #3b82f6;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-top: 0.5rem;
-        }
-
-        .cta {
+        .status {
             display: flex;
             gap: 1rem;
             justify-content: center;
+            margin-top: 1.5rem;
             flex-wrap: wrap;
-            margin-bottom: 4rem;
         }
 
-        .btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 700;
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .app-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
             cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .app-card:hover::before {
+            left: 100%;
+        }
+
+        .app-card:hover {
+            border-color: var(--primary);
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .app-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s ease;
+        }
+
+        .app-card:hover .app-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(139, 92, 246, 0.4));
+        }
+
+        .app-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .app-description {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .app-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .app-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .cta-button {
             display: inline-flex;
             align-items: center;
-            gap: 0.75rem;
-        }
-
-        .btn-primary {
-            background: #3b82f6;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
             color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 100%;
+            justify-content: center;
         }
 
-        .btn-primary:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: #e2e8f0;
-            border: 2px solid #3b82f6;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(59, 130, 246, 0.1);
-            transform: translateY(-2px);
+        .app-card:hover .cta-button {
+            background: var(--primary-dark);
+            transform: translateX(4px);
         }
 
         .features {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
             margin-bottom: 3rem;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
-        .feature {
-            flex: 1;
-            min-width: 200px;
-            padding: 1.5rem;
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 0.5rem;
+        .features-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-item {
+            text-align: center;
         }
 
         .feature-icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
 
         .feature-title {
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-light);
         }
 
         .feature-desc {
             font-size: 0.9rem;
-            color: #94a3b8;
-        }
-
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
-            margin: 4rem 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .curiosity {
-            background: rgba(30, 41, 59, 0.7);
-            border: 2px solid rgba(59, 130, 246, 0.3);
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 600px;
-            margin: 2rem auto;
-            text-align: left;
-        }
-
-        .curiosity-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #f1f5f9;
-        }
-
-        .curiosity-text {
-            font-size: 1rem;
-            color: #cbd5e1;
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-        }
-
-        .curiosity-list {
-            list-style: none;
-            margin-bottom: 1.5rem;
-        }
-
-        .curiosity-list li {
-            padding: 0.5rem 0;
-            color: #cbd5e1;
-            font-size: 0.95rem;
-        }
-
-        .curiosity-list li:before {
-            content: "→ ";
-            color: #3b82f6;
-            font-weight: 700;
-            margin-right: 0.5rem;
+            color: var(--text-muted);
         }
 
         footer {
             text-align: center;
             padding: 2rem;
-            color: #64748b;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
             font-size: 0.9rem;
-            margin-top: 4rem;
         }
 
         footer a {
-            color: #3b82f6;
+            color: var(--primary);
             text-decoration: none;
+            transition: color 0.3s ease;
         }
 
         footer a:hover {
+            color: var(--primary-dark);
             text-decoration: underline;
         }
 
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--success);
+            color: white;
+            border-radius: 0.3rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+
+        .coming-soon {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .coming-soon .badge-soon {
+            background: var(--warning);
+            color: #1f2937;
+        }
+
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
+            .header h1 {
+                font-size: 1.8rem;
             }
 
-            .logo {
-                font-size: 3rem;
+            .apps-grid {
+                grid-template-columns: 1fr;
             }
 
-            .tagline {
-                font-size: 1.1rem;
+            .features-grid {
+                grid-template-columns: 1fr;
             }
 
-            .stats {
-                gap: 2rem;
-            }
-
-            .stat-number {
-                font-size: 2rem;
-            }
-
-            .features {
-                gap: 1rem;
-            }
-
-            .feature {
-                min-width: 150px;
+            body {
+                padding: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <div class="logo">🥧</div>
-        
-        <h1>TinyServerLab</h1>
-        
-        <p class="tagline">
-            Self-hosted apps on Raspberry Pi 5.<br>
-            Replace subscriptions. Keep your data.
-        </p>
-
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-number">₹7K</div>
-                <div class="stat-label">Hardware cost</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">₹0</div>
-                <div class="stat-label">Recurring</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">∞</div>
-                <div class="stat-label">Possibilities</div>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🥧</div>
+            <h1>TinyServerLab</h1>
+            <p>Self-hosted applications on Raspberry Pi</p>
+            <div class="status">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>All systems operational</span>
+                </div>
+                <div class="status-item">
+                    <span>🔒 Encrypted tunnel</span>
+                </div>
+                <div class="status-item">
+                    <span>📍 Your data, your server</span>
+                </div>
             </div>
         </div>
 
-        <div class="cta">
-            <a href="https://github.com/TinyServerLab/pi5lab" target="_blank" class="btn btn-primary">
-                ⭐ Explore on GitHub
-            </a>
-            <a href="https://youtube.com/@TinyServerLab" target="_blank" class="btn btn-secondary">
-                ▶️ YouTube
-            </a>
-        </div>
-
+        <!-- Features Section -->
         <div class="features">
-            <div class="feature">
-                <div class="feature-icon">🔐</div>
-                <div class="feature-title">Your Data</div>
-                <div class="feature-desc">On your hardware. Not in someone else's cloud.</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">📦</div>
-                <div class="feature-title">Copy-Paste</div>
-                <div class="feature-desc">One text file. One command. Done.</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🆓</div>
-                <div class="feature-title">Open Source</div>
-                <div class="feature-desc">Free forever. No surprises. No lock-in.</div>
+            <div class="features-title">Why Self-Host?</div>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🔐</div>
+                    <div class="feature-title">Privacy First</div>
+                    <div class="feature-desc">Your data never leaves your server</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Zero Subscriptions</div>
+                    <div class="feature-desc">One-time hardware cost, forever free</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🚀</div>
+                    <div class="feature-title">Always Available</div>
+                    <div class="feature-desc">Access anywhere via secure tunnel</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔧</div>
+                    <div class="feature-title">Fully Customizable</div>
+                    <div class="feature-desc">Own your infrastructure</div>
+                </div>
             </div>
         </div>
 
-        <div class="divider"></div>
+        <!-- Apps Grid -->
+        <div class="apps-grid">
+            <!-- Home Asset Tracker -->
+            <a href="/inventory/" class="app-card">
+                <div class="app-icon">🏠</div>
+                <div class="app-title">
+                    Home Asset Tracker
+                    <span class="badge">Live</span>
+                </div>
+                <div class="app-description">
+                    Track household assets, warranties, invoices, and maintenance schedules. Never lose track of what you own.
+                </div>
+                <div class="app-tags">
+                    <span class="tag">Inventory</span>
+                    <span class="tag">Warranty</span>
+                    <span class="tag">Docs</span>
+                </div>
+                <div class="app-meta">
+                    <div class="meta-item">💾 Local DB</div>
+                    <div class="meta-item">📄 Export CSV</div>
+                </div>
+                <button class="cta-button">
+                    Open App →
+                </button>
+            </a>
 
-        <div class="curiosity">
-            <div class="curiosity-title">What's in the repo?</div>
-            <p class="curiosity-text">
-                Docker Compose files for every app. Setup guides. Hardening scripts. Everything you need to go from blank Raspberry Pi to a fully self-hosted stack.
-            </p>
-            <ul class="curiosity-list">
-                <li>Network-wide ad blocking</li>
-                <li>Private password manager</li>
-                <li>Your own Netflix alternative</li>
-                <li>Uptime monitoring</li>
-                <li>Speed testing</li>
-                <li>Local AI (offline)</li>
-                <li>+ more coming</li>
-            </ul>
-            <p class="curiosity-text">
-                Videos explain how to build each one from scratch. No jargon. No skipped steps.
-            </p>
-        </div>
+            <!-- Finance Tracker -->
+            <a href="/finance/" class="app-card">
+                <div class="app-icon">💰</div>
+                <div class="app-title">
+                    Finance Tracker
+                    <span class="badge">Live</span>
+                </div>
+                <div class="app-description">
+                    Track expenses, split costs with family, and visualize spending patterns. Replace YNAB for free.
+                </div>
+                <div class="app-tags">
+                    <span class="tag">Expenses</span>
+                    <span class="tag">Budget</span>
+                    <span class="tag">Charts</span>
+                </div>
+                <div class="app-meta">
+                    <div class="meta-item">👥 Multi-user</div>
+                    <div class="meta-item">📊 Analytics</div>
+                </div>
+                <button class="cta-button">
+                    Open App →
+                </button>
+            </a>
 
-        <div class="cta">
-            <a href="https://github.com/TinyServerLab/pi5-lab" target="_blank" class="btn btn-primary">
-                See the Repo
+            <!-- Ledger -->
+            <a href="https://ledger.tinyserverlab.in" class="app-card">
+                <div class="app-icon">📖</div>
+                <div class="app-title">
+                    Ledger
+                    <span class="badge">Live</span>
+                </div>
+                <div class="app-description">
+                    Double-entry accounting for personal finances. Full ledger, reconciliation, and financial reporting.
+                </div>
+                <div class="app-tags">
+                    <span class="tag">Accounting</span>
+                    <span class="tag">P&L</span>
+                    <span class="tag">Reports</span>
+                </div>
+                <div class="app-meta">
+                    <div class="meta-item">🔍 Auditable</div>
+                    <div class="meta-item">📈 Full Reports</div>
+                </div>
+                <button class="cta-button">
+                    Open App →
+                </button>
+            </a>
+
+            <!-- NSE Signal Trader -->
+            <a href="https://nse.tinyserverlab.in" class="app-card">
+                <div class="app-icon">📈</div>
+                <div class="app-title">
+                    NSE Signal Trader
+                    <span class="badge">Live</span>
+                </div>
+                <div class="app-description">
+                    Real-time trading signals for NSE stocks. Algorithmic analysis with paper trading simulation.
+                </div>
+                <div class="app-tags">
+                    <span class="tag">Trading</span>
+                    <span class="tag">Signals</span>
+                    <span class="tag">Backtest</span>
+                </div>
+                <div class="app-meta">
+                    <div class="meta-item">🔄 Live Data</div>
+                    <div class="meta-item">📊 Backtest</div>
+                </div>
+                <button class="cta-button">
+                    Open App →
+                </button>
+            </a>
+
+            <!-- NSE Dashboard -->
+            <a href="https://nse-dash.tinyserverlab.in" class="app-card">
+                <div class="app-icon">📊</div>
+                <div class="app-title">
+                    NSE Dashboard
+                    <span class="badge">Live</span>
+                </div>
+                <div class="app-description">
+                    Visual trading dashboard with real-time charts, portfolio tracking, and performance metrics.
+                </div>
+                <div class="app-tags">
+                    <span class="tag">Dashboard</span>
+                    <span class="tag">Charts</span>
+                    <span class="tag">Portfolio</span>
+                </div>
+                <div class="app-meta">
+                    <div class="meta-item">📡 Streaming</div>
+                    <div class="meta-item">⚡ Real-time</div>
+                </div>
+                <button class="cta-button">
+                    Open App →
+                </button>
+            </a>
+
+            <!-- Coming Soon -->
+            <a href="#" class="app-card coming-soon">
+                <div class="app-icon">🎬</div>
+                <div class="app-title">
+                    More Apps
+                    <span class="badge" style="background: var(--warning); color: #1f2937;">Coming</span>
+                </div>
+                <div class="app-description">
+                    New self-hosted applications are being built. Check back soon for meal planning, chore tracking, and more.
+                </div>
+                <div class="app-tags">
+                    <span class="tag">30-Min Challenges</span>
+                </div>
+                <div class="app-meta">
+                    <div class="meta-item">🚀 In Development</div>
+                </div>
+                <button class="cta-button">
+                    Watch on YouTube →
+                </button>
             </a>
         </div>
-    </div>
 
-    <footer>
-        <p>
-            <a href="https://github.com/TinyServerLab/pi5-lab" target="_blank">GitHub</a> · 
-            <a href="https://youtube.com/@TinyServerLab" target="_blank">YouTube</a> · 
-            <a href="https://tinyserverlab.in" target="_blank">Website</a>
-        </p>
-        <p style="margin-top: 1rem;">Made with 🥧 and Docker</p>
-    </footer>
+        <!-- Footer -->
+        <footer>
+            <p>
+                🥧 <strong>TinyServerLab</strong> — Self-hosted on Raspberry Pi 5 with ❤️
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.85rem;">
+                <a href="https://github.com/TinyServerLab" target="_blank">GitHub</a> ·
+                <a href="https://youtube.com/@TinyServerLab" target="_blank">YouTube</a> ·
+                <a href="https://tinyserverlab.in" target="_blank">Main Site</a>
+            </p>
+        </footer>
+    </div>
 </body>
 </html>
