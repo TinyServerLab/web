@@ -314,6 +314,30 @@
             color: #1f2937;
         }
 
+        .github-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-top: 1.5rem;
+        }
+
+        .github-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.8rem;
@@ -352,6 +376,9 @@
                     <span>📍 Your data, your server</span>
                 </div>
             </div>
+            <a href="https://github.com/TinyServerLab/30-min-challenges" target="_blank" class="github-button">
+                ⭐ Clone on GitHub
+            </a>
         </div>
 
         <!-- Features Section -->
@@ -384,7 +411,7 @@
         <!-- Apps Grid -->
         <div class="apps-grid">
             <!-- Home Asset Tracker -->
-            <a href="https://apps.tinyserverlab.in/inventory/" class="app-card">
+            <a href="/inventory/" class="app-card">
                 <div class="app-icon">🏠</div>
                 <div class="app-title">
                     Home Asset Tracker
@@ -408,7 +435,7 @@
             </a>
 
             <!-- Finance Tracker -->
-            <a href="https://apps.tinyserverlab.in/finance/" class="app-card">
+            <a href="/finance/" class="app-card">
                 <div class="app-icon">💰</div>
                 <div class="app-title">
                     Finance Tracker
@@ -430,6 +457,8 @@
                     Open App →
                 </button>
             </a>
+
+            <!-- Ledger -->
 
             <!-- NSE Signal Trader -->
             <a href="https://nse.tinyserverlab.in" class="app-card">
