@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyServerLab Apps — Minimal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8f9fb;
+            --text: #0f172a;
+            --muted: #51596b;
+            --border: #e2e6ec;
+            --surface: rgba(255, 255, 255, 0.9);
+            --live-bg: #e3f8ee;
+            --live-text: #047857;
+            --soon-bg: #fef3dc;
+            --soon-text: #92620a;
+        }
+
+        /* "System" (no explicit choice): follow the OS. */
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --primary: #3b82f6;
+                --primary-dark: #60a5fa;
+                --bg: #0f172a;
+                --text: #e2e8f0;
+                --muted: #94a3b8;
+                --border: #334155;
+                --surface: rgba(30, 41, 59, 0.85);
+            }
+        }
+
+        /* Explicit choice from the toggle, regardless of OS. */
+        :root[data-theme="dark"] {
+            --primary: #3b82f6;
+            --primary-dark: #60a5fa;
+            --bg: #0f172a;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --border: #334155;
+            --surface: rgba(30, 41, 59, 0.85);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.25rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.6rem;
+            padding: 0.25rem;
+            z-index: 50;
+        }
+
+        .theme-btn {
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.4rem;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            color: var(--text);
+        }
+
+        .theme-btn[aria-pressed="true"] {
+            background: var(--primary);
+            color: white;
+        }
+
+        .page {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 4.5rem 1.5rem 3.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 3.5rem;
+        }
+
+        .m-header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .m-logo {
+            font-size: 2.5rem;
+        }
+
+        .m-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .m-header p {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .m-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .m-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.9rem;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .m-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .m-features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.75rem;
+            padding: 1.4rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .m-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .m-apps-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .m-row {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            padding: 1.4rem 0;
+            border-top: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .m-row-icon {
+            font-size: 1.6rem;
+            width: 2.5rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .m-row-body {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .m-row-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .m-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .m-badge-live {
+            color: var(--live-text);
+            background: var(--live-bg);
+        }
+
+        .m-badge-soon {
+            color: var(--soon-text);
+            background: var(--soon-bg);
+        }
+
+        .m-row-desc {
+            font-size: 0.875rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .m-row-cta {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+            white-space: nowrap;
+            padding-top: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .m-row-soon {
+            border-bottom: 1px solid var(--border);
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .m-footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+            padding-top: 0.5rem;
+        }
+
+        .m-footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .m-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .m-row {
+                flex-wrap: wrap;
+            }
+
+            .m-row-cta {
+                margin-left: calc(2.5rem + 1.25rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" role="group" aria-label="Color theme">
+        <button type="button" class="theme-btn" data-theme-choice="light" aria-label="Light theme">☀️</button>
+        <button type="button" class="theme-btn" data-theme-choice="dark" aria-label="Dark theme">🌙</button>
+        <button type="button" class="theme-btn" data-theme-choice="system" aria-label="Match system theme">🖥️</button>
+    </div>
+
+    <div class="page">
+        <div class="m-header">
+            <span class="m-logo" aria-hidden="true">🥧</span>
+            <h1>TinyServerLab</h1>
+            <p>Self-hosted apps on Raspberry Pi. Your server, your rules.</p>
+            <div class="m-actions">
+                <a class="m-btn" href="https://github.com/TinyServerLab/" target="_blank" rel="noopener noreferrer">⭐ Clone on GitHub</a>
+                <a class="m-btn" href="https://youtube.com/@TinyServerLab" target="_blank" rel="noopener noreferrer">▶ Watch on YouTube</a>
+            </div>
+        </div>
+
+        <div class="m-features">
+            <div class="m-feature"><span aria-hidden="true">🔐</span><span>Privacy first</span></div>
+            <div class="m-feature"><span aria-hidden="true">💰</span><span>Zero subscriptions</span></div>
+            <div class="m-feature"><span aria-hidden="true">🚀</span><span>Always available</span></div>
+            <div class="m-feature"><span aria-hidden="true">🔧</span><span>Fully customizable</span></div>
+        </div>
+
+        <div>
+            <div class="m-apps-label">Apps · 4 live, 1 in development</div>
+
+            <a class="m-row" href="https://apps.tinyserverlab.in/inventory/">
+                <span class="m-row-icon" aria-hidden="true">🏠</span>
+                <span class="m-row-body">
+                    <span class="m-row-title">Home Asset Tracker <span class="m-badge m-badge-live">LIVE</span></span>
+                    <span class="m-row-desc">Track household assets, warranties, invoices, and maintenance schedules.</span>
+                </span>
+                <span class="m-row-cta">Open →</span>
+            </a>
+
+            <a class="m-row" href="https://apps.tinyserverlab.in/finance/">
+                <span class="m-row-icon" aria-hidden="true">💰</span>
+                <span class="m-row-body">
+                    <span class="m-row-title">Finance Tracker <span class="m-badge m-badge-live">LIVE</span></span>
+                    <span class="m-row-desc">Track expenses, split costs with family, and visualize spending patterns.</span>
+                </span>
+                <span class="m-row-cta">Open →</span>
+            </a>
+
+            <a class="m-row" href="https://apps.tinyserverlab.in/nse/">
+                <span class="m-row-icon" aria-hidden="true">📈</span>
+                <span class="m-row-body">
+                    <span class="m-row-title">NSE Signal Trader <span class="m-badge m-badge-live">LIVE</span></span>
+                    <span class="m-row-desc">Real-time trading signals for NSE stocks, with paper trading simulation.</span>
+                </span>
+                <span class="m-row-cta">Open →</span>
+            </a>
+
+            <a class="m-row" href="https://apps.tinyserverlab.in/dashboard-nse/">
+                <span class="m-row-icon" aria-hidden="true">📊</span>
+                <span class="m-row-body">
+                    <span class="m-row-title">NSE Dashboard <span class="m-badge m-badge-live">LIVE</span></span>
+                    <span class="m-row-desc">Visual trading dashboard with real-time charts and performance metrics.</span>
+                </span>
+                <span class="m-row-cta">Open →</span>
+            </a>
+
+            <div class="m-row m-row-soon">
+                <span class="m-row-icon" aria-hidden="true">🎬</span>
+                <span class="m-row-body">
+                    <span class="m-row-title">More apps <span class="m-badge m-badge-soon">SOON</span></span>
+                    <span class="m-row-desc">Meal planning, chore tracking and more — in development.</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="m-footer">
+            <span aria-hidden="true">🥧</span> TinyServerLab — self-hosted on Raspberry Pi 5 ·
+            <a href="https://github.com/TinyServerLab" target="_blank" rel="noopener noreferrer">GitHub</a> ·
+            <a href="https://youtube.com/@TinyServerLab" target="_blank" rel="noopener noreferrer">YouTube</a> ·
+            <a href="https://tinyserverlab.in" target="_blank" rel="noopener noreferrer">Main Site</a>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var KEY = 'tsl-theme';
+            var root = document.documentElement;
+            var btns = document.querySelectorAll('.theme-btn');
+
+            function apply(choice) {
+                if (choice === 'light' || choice === 'dark') {
+                    root.setAttribute('data-theme', choice);
+                } else {
+                    root.removeAttribute('data-theme');
+                }
+                btns.forEach(function (b) {
+                    b.setAttribute('aria-pressed', String(b.dataset.themeChoice === choice));
+                });
+            }
+
+            var saved = null;
+            try { saved = localStorage.getItem(KEY); } catch (e) {}
+            apply(saved || 'system');
+
+            btns.forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var choice = b.dataset.themeChoice;
+                    apply(choice);
+                    try { localStorage.setItem(KEY, choice); } catch (e) {}
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
